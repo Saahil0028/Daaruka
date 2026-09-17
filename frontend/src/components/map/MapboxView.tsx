@@ -73,21 +73,47 @@ export const MapboxView: React.FC<MapboxViewProps> = ({
     if (!mapContainerRef.current) return;
 
     // Set the Mapbox access token
-    const token = import.meta.env.VITE_MAPBOX_TOKEN || '';
-    mapboxgl.accessToken = token;
+    const token = (import.meta.env.VITE_MAPBOX_TOKEN || '').trim();
+    const isValidToken = token.startsWith('pk.') && !token.includes('example');
 
-    const styleUrl =
-      mapStyle === 'satellite'
-        ? 'mapbox://styles/mapbox/satellite-streets-v12'
-        : 'mapbox://styles/mapbox/dark-v11';
+    if (isValidToken) {
+      mapboxgl.accessToken = token;
+    }
+
+    // If valid Mapbox token provided, use Mapbox hosted styles; otherwise fallback to public OpenStreetMap tiles to prevent crash
+    const styleUrl = isValidToken
+      ? (mapStyle === 'satellite'
+          ? 'mapbox://styles/mapbox/satellite-streets-v12'
+          : 'mapbox://styles/mapbox/dark-v11')
+      : {
+          version: 8,
+          sources: {
+            'osm-tiles': {
+              type: 'raster',
+              tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
+              tileSize: 256,
+              attribution: '&copy; OpenStreetMap Contributors',
+            },
+          },
+          layers: [
+            {
+              id: 'osm-tiles-layer',
+              type: 'raster',
+              source: 'osm-tiles',
+              minzoom: 0,
+              maxzoom: 19,
+            },
+          ],
+        };
 
     const map = new mapboxgl.Map({
       container: mapContainerRef.current,
-      style: styleUrl,
+      style: styleUrl as any,
       center: [76.13, 11.61], // Western Ghats default
       zoom: 9.5,
       pitch: 20,
     });
+
 
     // Navigation controls
     map.addControl(new mapboxgl.NavigationControl({ visualizePitch: true }), 'top-right');
