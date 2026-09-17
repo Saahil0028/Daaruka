@@ -17,9 +17,12 @@ class Settings(BaseSettings):
 
     @field_validator("DATABASE_URL", mode="before")
     def assemble_db_url(cls, v: str) -> str:
-        if isinstance(v, str) and v.startswith("postgres://"):
-            return v.replace("postgres://", "postgresql://", 1)
+        if isinstance(v, str):
+            v = v.strip().strip('"').strip("'")
+            if v.startswith("postgres://"):
+                return v.replace("postgres://", "postgresql://", 1)
         return v
+
 
     # CORS
     CORS_ORIGINS: Union[str, List[str]] = [
