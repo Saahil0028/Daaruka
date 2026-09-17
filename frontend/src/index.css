@@ -1,0 +1,61 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    background-color: #070C0A;
+    color: #E2E8F0;
+  }
+}
+
+/* Mapbox GL Customization */
+.mapboxgl-popup-content {
+  background-color: #0B1410 !important;
+  color: #E2E8F0 !important;
+  border: 1px solid #1A2E24 !important;
+  border-radius: 8px !important;
+  padding: 12px 16px !important;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5) !important;
+}
+
+.mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip {
+  border-top-color: #0B1410 !important;
+}
+
+.mapboxgl-ctrl-group {
+  background-color: #0B1410 !important;
+  border: 1px solid #1A2E24 !important;
+  border-radius: 8px !important;
+}
+
+.mapboxgl-ctrl-group button {
+  border-bottom: 1px solid #1A2E24 !important;
+}
+
+.mapboxgl-ctrl-group button:last-child {
+  border-bottom: none !important;
+}
+
+.mapboxgl-ctrl-icon {
+  filter: invert(0.8) hue-rotate(90deg) !important;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #070C0A;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #1A2E24;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #10B981;
+}

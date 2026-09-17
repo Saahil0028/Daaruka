@@ -1,0 +1,8 @@
+{
+  "frontend/**/*.{ts,tsx}": [
+    "prettier --write"
+  ],
+  "backend/**/*.py": [
+    "ruff check --fix"
+  ]
+}
