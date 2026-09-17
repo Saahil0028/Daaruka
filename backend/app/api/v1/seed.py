@@ -16,6 +16,9 @@ from app.services.geospatial import calculate_geodesic_area_sq_km, shapely_to_wk
 router = APIRouter()
 
 @router.post("", status_code=status.HTTP_200_OK)
+@router.post("/", status_code=status.HTTP_200_OK)
+@router.get("", status_code=status.HTTP_200_OK)
+@router.get("/", status_code=status.HTTP_200_OK)
 def seed_demo_data(db: Session = Depends(get_db)) -> Dict[str, Any]:
     """Seed demo administrator user, realistic projects, spatial sites, and time-series analytics."""
     
