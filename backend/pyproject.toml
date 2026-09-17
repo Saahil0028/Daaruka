@@ -2,7 +2,6 @@
 name = "darukaa-earth-backend"
 version = "0.1.0"
 description = "Darukaa.Earth Environmental Intelligence API Backend"
-readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
     "fastapi>=0.110.0",
@@ -28,9 +27,8 @@ dev = [
     "ruff>=0.3.0",
 ]
 
-[build-system]
-requires = ["setuptools>=61.0"]
-build-backend = "setuptools.build_meta"
+[tool.uv]
+package = false
 
 [tool.ruff]
 line-length = 120
