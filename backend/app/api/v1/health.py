@@ -1,3 +1,5 @@
+import os
+
 from fastapi import APIRouter, Depends
 from sqlalchemy import text
 from sqlalchemy.orm import Session
@@ -5,6 +7,7 @@ from sqlalchemy.orm import Session
 from app.api.deps import get_db
 
 router = APIRouter()
+
 
 @router.get("", status_code=200)
 def health_check(db: Session = Depends(get_db)):
@@ -31,9 +34,11 @@ def health_check(db: Session = Depends(get_db)):
             "error": str(e)
         }
 
+@router.get("/config", status_code=200)
+def get_public_config():
+    """Return public frontend configuration such as Mapbox public access token."""
+    token = os.getenv("VITE_MAPBOX_TOKEN") or os.getenv("MAPBOX_TOKEN") or ""
     return {
-        "status": "healthy" if db_ok else "unhealthy",
-        "database": "connected" if db_ok else "disconnected",
-        "postgis_info": postgis_version,
-        "service": "Darukaa.Earth Backend API"
+        "mapbox_token": token
     }
+

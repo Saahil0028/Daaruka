@@ -68,16 +68,32 @@ export const MapboxView: React.FC<MapboxViewProps> = ({
     []
   );
 
+  const [runtimeToken, setRuntimeToken] = useState<string>(
+    () => (import.meta.env.VITE_MAPBOX_TOKEN || '').trim()
+  );
+
+  // Fetch token from backend runtime config if not baked into Vite bundle
+  useEffect(() => {
+    if (!runtimeToken || !runtimeToken.startsWith('pk.') || runtimeToken.includes('example')) {
+      fetch(`${import.meta.env.VITE_API_BASE_URL || '/api/v1'}/health/config`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data && data.mapbox_token && data.mapbox_token.startsWith('pk.')) {
+            setRuntimeToken(data.mapbox_token);
+          }
+        })
+        .catch(() => {});
+    }
+  }, [runtimeToken]);
+
   // ─── Initialize Map ───────────────────────────────────────────────────
   useEffect(() => {
     if (!mapContainerRef.current) return;
 
-    // Set the Mapbox access token from environment
-    const token = (import.meta.env.VITE_MAPBOX_TOKEN || '').trim();
+    const token = runtimeToken;
     const hasValidToken = Boolean(token && token.startsWith('pk.') && !token.includes('example'));
 
     if (!hasValidToken) {
-      console.warn('Mapbox access token missing or invalid. Set VITE_MAPBOX_TOKEN in Vercel.');
       return;
     }
 
@@ -95,6 +111,7 @@ export const MapboxView: React.FC<MapboxViewProps> = ({
       zoom: 9.5,
       pitch: 20,
     });
+
 
 
 
@@ -276,7 +293,8 @@ export const MapboxView: React.FC<MapboxViewProps> = ({
       mapRef.current = null;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mapStyle]);
+  }, [mapStyle, runtimeToken]);
+
 
   // ─── Update GeoJSON source when sites change ──────────────────────
   useEffect(() => {
@@ -326,8 +344,9 @@ export const MapboxView: React.FC<MapboxViewProps> = ({
     }
   }, [isDrawingMode]);
 
-    const token = (import.meta.env.VITE_MAPBOX_TOKEN || '').trim();
-    const isTokenMissing = !token || !token.startsWith('pk.') || token.includes('example');
+  const isTokenMissing =
+    !runtimeToken || !runtimeToken.startsWith('pk.') || runtimeToken.includes('example');
+
 
   // ─── JSX ──────────────────────────────────────────────────────────
   return (
