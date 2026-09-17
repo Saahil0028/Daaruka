@@ -1,7 +1,8 @@
-from typing import Generator, Optional
-from fastapi import Depends, HTTPException, status, Query
-from fastapi.security import OAuth2PasswordBearer
+from typing import Optional
+
 import jwt
+from fastapi import Depends, HTTPException, Query, status
+from fastapi.security import OAuth2PasswordBearer
 from pydantic import ValidationError
 from sqlalchemy.orm import Session
 
@@ -37,12 +38,12 @@ def get_current_user(
                 detail="Could not validate credentials",
                 headers={"WWW-Authenticate": "Bearer"},
             )
-    except (jwt.PyJWTError, ValidationError):
+    except (jwt.PyJWTError, ValidationError) as err:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Could not validate credentials",
             headers={"WWW-Authenticate": "Bearer"},
-        )
+        ) from err
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
         raise HTTPException(

@@ -1,5 +1,7 @@
-from typing import List, Literal, Union, Dict, Any, Optional
+from typing import Any, Dict, List, Literal, Optional, Union
+
 from pydantic import BaseModel, Field
+
 
 class GeoJSONPolygon(BaseModel):
     type: Literal["Polygon"]

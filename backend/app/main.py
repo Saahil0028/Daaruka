@@ -1,10 +1,13 @@
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
+import app.models  # ensure all models registered
+from app.api.v1.api_router import api_router
 from app.core.config import settings
-from app.core.database import engine, Base
-import app.models # ensure all models registered
+from app.core.database import Base, engine
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -33,7 +36,6 @@ if settings.CORS_ORIGINS:
         allow_headers=["*"],
     )
 
-from app.api.v1.api_router import api_router
 app.include_router(api_router, prefix=settings.API_V1_STR)
 
 @app.get("/")

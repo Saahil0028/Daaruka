@@ -1,16 +1,17 @@
-from datetime import datetime, date, timedelta, timezone
-from typing import Dict, Any
+from datetime import date, datetime, timedelta, timezone
+from typing import Any, Dict
+
 from fastapi import APIRouter, Depends, status
-from sqlalchemy.orm import Session
 from shapely.geometry import Polygon
+from sqlalchemy.orm import Session
 
 from app.api.deps import get_db
 from app.core.security import get_password_hash
-from app.models.user import User
+from app.models.analytics import SiteAnalytics
 from app.models.project import Project
 from app.models.site import Site
-from app.models.analytics import SiteAnalytics
-from app.services.geospatial import shapely_to_wkb_element, calculate_geodesic_area_sq_km
+from app.models.user import User
+from app.services.geospatial import calculate_geodesic_area_sq_km, shapely_to_wkb_element
 
 router = APIRouter()
 

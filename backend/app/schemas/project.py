@@ -1,7 +1,9 @@
+from datetime import date, datetime
+from typing import Optional
 from uuid import UUID
-from datetime import datetime, date
-from typing import Optional, List
+
 from pydantic import BaseModel, Field
+
 
 class ProjectCreate(BaseModel):
     name: str = Field(..., min_length=2, max_length=255)

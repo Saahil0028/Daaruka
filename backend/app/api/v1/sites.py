@@ -1,21 +1,22 @@
-from typing import List, Optional, Dict, Any
-from uuid import UUID
-from datetime import datetime, timedelta, timezone
 import random
-from fastapi import APIRouter, Depends, HTTPException, status, Query
+from datetime import datetime, timedelta, timezone
+from typing import List, Optional
+from uuid import UUID
+
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
-from app.api.deps import get_db, get_current_user
-from app.models.user import User
+from app.api.deps import get_current_user, get_db
+from app.models.analytics import SiteAnalytics
 from app.models.project import Project
 from app.models.site import Site
-from app.models.analytics import SiteAnalytics
-from app.schemas.site import SiteCreate, SiteUpdate, SiteResponse
-from app.schemas.geo import GeoJSONFeatureCollection, GeoJSONFeature
+from app.models.user import User
+from app.schemas.geo import GeoJSONFeature, GeoJSONFeatureCollection
+from app.schemas.site import SiteCreate, SiteResponse, SiteUpdate
 from app.services.geospatial import (
     parse_and_validate_geojson_geometry,
     shapely_to_wkb_element,
-    wkb_to_geojson_dict
+    wkb_to_geojson_dict,
 )
 
 router = APIRouter()
@@ -170,7 +171,8 @@ def create_site_for_project(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=f"Invalid geometry: {str(val_err)}"
-        )
+        ) from val_err
+
 
     wkb_geom = shapely_to_wkb_element(shapely_geom)
 
@@ -234,7 +236,8 @@ def update_site(
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=f"Invalid geometry: {str(val_err)}"
-            )
+            ) from val_err
+
 
     db.commit()
     db.refresh(site)

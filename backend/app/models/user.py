@@ -1,9 +1,12 @@
 import uuid
 from datetime import datetime, timezone
-from sqlalchemy import Column, String, DateTime
+
+from sqlalchemy import Column, DateTime, String
 from sqlalchemy.orm import relationship
+
 from app.core.database import Base
 from app.models.guid import GUID
+
 
 class User(Base):
     __tablename__ = "users"

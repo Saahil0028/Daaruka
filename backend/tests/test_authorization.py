@@ -1,6 +1,6 @@
 def test_multi_tenant_authorization_isolation(client):
     # Register User A
-    res_a = client.post("/api/v1/auth/register", json={
+    client.post("/api/v1/auth/register", json={
         "name": "User A", "email": "usera@darukaa.earth", "password": "Password123!"
     })
     token_a = client.post("/api/v1/auth/login", json={
@@ -9,9 +9,10 @@ def test_multi_tenant_authorization_isolation(client):
     headers_a = {"Authorization": f"Bearer {token_a}"}
 
     # Register User B
-    res_b = client.post("/api/v1/auth/register", json={
+    client.post("/api/v1/auth/register", json={
         "name": "User B", "email": "userb@darukaa.earth", "password": "Password123!"
     })
+
     token_b = client.post("/api/v1/auth/login", json={
         "email": "userb@darukaa.earth", "password": "Password123!"
     }).json()["access_token"]

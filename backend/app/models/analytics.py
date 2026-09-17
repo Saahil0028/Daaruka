@@ -1,9 +1,12 @@
 import uuid
 from datetime import datetime, timezone
-from sqlalchemy import Column, String, Float, Boolean, DateTime, ForeignKey, Index
+
+from sqlalchemy import Boolean, Column, DateTime, Float, ForeignKey, Index, String
 from sqlalchemy.orm import relationship
+
 from app.core.database import Base
 from app.models.guid import GUID
+
 
 class SiteAnalytics(Base):
     __tablename__ = "site_analytics"

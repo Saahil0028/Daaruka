@@ -1,11 +1,14 @@
 import uuid
 from datetime import datetime, timezone
-from sqlalchemy import Column, String, Text, Float, DateTime, ForeignKey
-from sqlalchemy.orm import relationship
+
 from geoalchemy2 import Geometry
-from app.core.database import Base
+from sqlalchemy import Column, DateTime, Float, ForeignKey, String, Text
+from sqlalchemy.orm import relationship
+
 from app.core.config import settings
+from app.core.database import Base
 from app.models.guid import GUID
+
 
 class Site(Base):
     __tablename__ = "sites"

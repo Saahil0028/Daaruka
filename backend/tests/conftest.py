@@ -1,13 +1,16 @@
 import os
+
 import pytest
 
 os.environ["DATABASE_URL"] = "sqlite:///:memory:"
 
 from app.core.config import settings
+
 settings.DATABASE_URL = "sqlite:///:memory:"
 
-from app.core.database import Base, get_db, engine
+from app.core.database import Base, engine, get_db
 from app.main import app
+
 
 @pytest.fixture(scope="function", autouse=True)
 def setup_db():

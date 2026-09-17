@@ -1,11 +1,13 @@
 import json
-from typing import Dict, Any, Tuple
 import math
-import shapely.geometry
-from shapely.geometry import shape, mapping, Polygon, MultiPolygon
-from shapely.validation import explain_validity
+from typing import Any, Dict, Tuple
+
 from geoalchemy2.shape import from_shape, to_shape
+from shapely.geometry import MultiPolygon, Polygon, mapping, shape
+from shapely.validation import explain_validity
+
 from app.core.database import is_sqlite
+
 
 def parse_and_validate_geojson_geometry(geojson_dict: Dict[str, Any]) -> Tuple[Any, float]:
     """
@@ -16,7 +18,7 @@ def parse_and_validate_geojson_geometry(geojson_dict: Dict[str, Any]) -> Tuple[A
     try:
         geom = shape(geojson_dict)
     except Exception as e:
-        raise ValueError(f"Invalid GeoJSON structure: {str(e)}")
+        raise ValueError(f"Invalid GeoJSON structure: {str(e)}") from e
 
     if not isinstance(geom, (Polygon, MultiPolygon)):
         raise ValueError("Geometry must be a GeoJSON Polygon or MultiPolygon")

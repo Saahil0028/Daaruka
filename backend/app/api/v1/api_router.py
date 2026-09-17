@@ -1,5 +1,6 @@
 from fastapi import APIRouter
-from app.api.v1 import auth, projects, sites, analytics, seed, health
+
+from app.api.v1 import analytics, auth, health, projects, seed, sites
 
 api_router = APIRouter()
 
