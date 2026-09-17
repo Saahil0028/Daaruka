@@ -72,47 +72,30 @@ export const MapboxView: React.FC<MapboxViewProps> = ({
   useEffect(() => {
     if (!mapContainerRef.current) return;
 
-    // Set the Mapbox access token
+    // Set the Mapbox access token from environment
     const token = (import.meta.env.VITE_MAPBOX_TOKEN || '').trim();
-    const isValidToken = token.startsWith('pk.') && !token.includes('example');
+    const hasValidToken = Boolean(token && token.startsWith('pk.') && !token.includes('example'));
 
-    if (isValidToken) {
-      mapboxgl.accessToken = token;
+    if (!hasValidToken) {
+      console.warn('Mapbox access token missing or invalid. Set VITE_MAPBOX_TOKEN in Vercel.');
+      return;
     }
 
-    // If valid Mapbox token provided, use Mapbox hosted styles; otherwise fallback to public OpenStreetMap tiles to prevent crash
-    const styleUrl = isValidToken
-      ? (mapStyle === 'satellite'
-          ? 'mapbox://styles/mapbox/satellite-streets-v12'
-          : 'mapbox://styles/mapbox/dark-v11')
-      : {
-          version: 8,
-          sources: {
-            'osm-tiles': {
-              type: 'raster',
-              tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
-              tileSize: 256,
-              attribution: '&copy; OpenStreetMap Contributors',
-            },
-          },
-          layers: [
-            {
-              id: 'osm-tiles-layer',
-              type: 'raster',
-              source: 'osm-tiles',
-              minzoom: 0,
-              maxzoom: 19,
-            },
-          ],
-        };
+    mapboxgl.accessToken = token;
+
+    const styleUrl =
+      mapStyle === 'satellite'
+        ? 'mapbox://styles/mapbox/satellite-streets-v12'
+        : 'mapbox://styles/mapbox/dark-v11';
 
     const map = new mapboxgl.Map({
       container: mapContainerRef.current,
-      style: styleUrl as any,
+      style: styleUrl,
       center: [76.13, 11.61], // Western Ghats default
       zoom: 9.5,
       pitch: 20,
     });
+
 
 
     // Navigation controls
@@ -343,11 +326,30 @@ export const MapboxView: React.FC<MapboxViewProps> = ({
     }
   }, [isDrawingMode]);
 
+    const token = (import.meta.env.VITE_MAPBOX_TOKEN || '').trim();
+    const isTokenMissing = !token || !token.startsWith('pk.') || token.includes('example');
+
   // ─── JSX ──────────────────────────────────────────────────────────
   return (
     <div className="relative w-full h-full min-h-[480px] rounded-xl overflow-hidden border border-[#1A2E24] shadow-2xl bg-[#070C0A]">
       {/* Map canvas */}
       <div ref={mapContainerRef} className="absolute inset-0 w-full h-full" />
+
+      {/* Missing Token Fallback Overlay */}
+      {isTokenMissing && (
+        <div className="absolute inset-0 z-30 flex flex-col items-center justify-center p-6 text-center bg-[#070C0A]/90 backdrop-blur-sm">
+          <div className="max-w-md p-6 rounded-2xl bg-[#0B1410] border border-amber-500/40 shadow-2xl space-y-4">
+            <div className="w-12 h-12 mx-auto rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400">
+              <AlertCircle className="w-6 h-6" />
+            </div>
+            <h3 className="text-base font-bold text-white">Mapbox Token Required</h3>
+            <p className="text-xs text-slate-300 leading-relaxed">
+              To render satellite tiles and interactive geometry editing, configure <code className="px-1.5 py-0.5 rounded bg-black/50 text-amber-400 font-mono">VITE_MAPBOX_TOKEN</code> in your Vercel project settings.
+            </p>
+          </div>
+        </div>
+      )}
+
 
       {/* Live drawing feedback banner */}
       {isDrawingMode && (
