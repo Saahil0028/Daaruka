@@ -1,6 +1,9 @@
 # Dependencies
 node_modules/
+venv/
+.venv/
 backend/venv/
+backend/.venv/
 __pycache__/
 *.pyc
 *.pyo
@@ -14,8 +17,8 @@ frontend/dist/
 
 # Local Environment & Secrets
 .env
-.env.local
-.env.production
+.env.*
+*.env
 *.db
 *.sqlite
 *.sqlite3

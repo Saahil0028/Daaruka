@@ -68,15 +68,21 @@ export const MapboxView: React.FC<MapboxViewProps> = ({
     []
   );
 
-  const [runtimeToken, setRuntimeToken] = useState<string>(
-    () => (import.meta.env.VITE_MAPBOX_TOKEN || '').trim()
-  );
+  const [runtimeToken, setRuntimeToken] = useState<string>(() => {
+    const local = (localStorage.getItem('darukaa_mapbox_token') || '').trim();
+    if (local && local.startsWith('pk.') && !local.includes('example')) {
+      return local;
+    }
+    return (import.meta.env.VITE_MAPBOX_TOKEN || '').trim();
+  });
 
-  // Fetch token from backend runtime config if not baked into Vite bundle
+  // Fetch token from backend runtime config if not baked into Vite bundle or localStorage
   useEffect(() => {
     if (!runtimeToken || !runtimeToken.startsWith('pk.') || runtimeToken.includes('example')) {
-      fetch(`${import.meta.env.VITE_API_BASE_URL || '/api/v1'}/health/config`)
-        .then((res) => res.json())
+      const rawBase = (import.meta.env.VITE_API_BASE_URL || '/api/v1').replace(/\/+$/, '');
+      const apiUrl = rawBase.endsWith('/api/v1') ? rawBase : `${rawBase}/api/v1`;
+      fetch(`${apiUrl}/health/config`)
+        .then((res) => (res.ok ? res.json() : null))
         .then((data) => {
           if (data && data.mapbox_token && data.mapbox_token.startsWith('pk.')) {
             setRuntimeToken(data.mapbox_token);
