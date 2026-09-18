@@ -2,6 +2,13 @@
 
 > **Tagline**: *"Environmental intelligence, grounded in geography."*
 
+**Submission Deliverables:**
+- **Live Demo URL**: [https://daaruka.vercel.app/](https://daaruka.vercel.app/)
+- **GitHub Repository**: [https://github.com/Saahil0028/Daaruka.git](https://github.com/Saahil0028/Daaruka.git)
+- **API Documentation (Swagger UI)**: [https://daaruka.vercel.app/api/v1/docs](https://daaruka.vercel.app/api/v1/docs)
+
+---
+
 Darukaa.Earth is a production-grade full-stack geospatial data analytics platform for managing carbon offset projects, tracking ecosystem restoration, and drawing spatial polygon site boundaries persisted in PostgreSQL with PostGIS.
 
 ---
@@ -228,25 +235,89 @@ You can seed demo projects and PostGIS site polygons in two ways:
 
 ---
 
-## 7. Testing Instructions
+## 7. Testing & Quality Verification
 
-### Run Backend Pytest Suite (9 Unit & Integration Tests):
+### Run Backend Pytest Suite (13 Automated Tests):
 ```bash
 cd backend
 pytest tests/ -v
 ```
-
 Tests cover:
-- Registration, password hashing, JWT login.
-- Resource authorization (multi-tenant user isolation).
-- Project CRUD and cascade deletion.
-- GeoJSON polygon drawing validation (`ST_IsValid` & Shapely).
-- Self-intersecting polygon rejection.
-- Geodesic area calculation.
-- 9-step E2E primary acceptance workflow.
+- Registration, bcrypt password hashing, and JWT bearer authentication (`test_auth.py`).
+- Multi-tenant resource authorization and ownership isolation (`test_authorization.py`).
+- Project CRUD, site assignment, and database cascade deletion (`test_sites.py`).
+- GeoJSON polygon drawing validation (`ST_IsValid` & Shapely) and geodesic area calculation.
+- System health checks, PostGIS verification, and preventing sensitive token leakage (`test_health.py`).
+- Complete 9-step end-to-end primary acceptance user journey (`test_e2e_workflow.py`).
+
+### Run Frontend Vitest Suite:
+```bash
+cd frontend
+npm test
+```
+
+### Pre-commit Formatting & Quality Check:
+```bash
+# Format TypeScript, React, and CSS files with Prettier:
+npm run format:write
+
+# Run Ruff Python linter and auto-fixer:
+cd backend && ruff check --fix
+```
 
 ---
 
-## 8. Data Provenance & Transparency
+## 8. CI/CD Pipeline & Developer Experience
+
+The repository implements an automated, industry-standard Continuous Integration and Continuous Deployment (CI/CD) pipeline using **GitHub Actions**, **Husky**, and **lint-staged**.
+
+### Automated Pre-Commit Code Quality Gate
+- **Husky & lint-staged**: Configured at repository root (`.husky/pre-commit` and `.lintstagedrc.json`).
+- **Formatting**: Runs `prettier --write` automatically on all staged `.ts` and `.tsx` frontend files before commit.
+- **Linting**: Runs `ruff check --fix` automatically on all staged Python backend files.
+- Ensures malformed code or syntax violations never enter the git commit history.
+
+### GitHub Actions Workflows
+Located under `.github/workflows/`:
+
+1. **`ci.yml` (Continuous Integration Pipeline)**:
+   - **Trigger**: Every push or pull request to `main` and `master`.
+   - **`backend-tests` Job**:
+     - Sets up Python 3.11 with cached pip dependencies.
+     - Runs `ruff check backend/app` to enforce zero lint warnings.
+     - Runs the full `pytest tests/ -v` test suite with in-memory SQLite isolation.
+   - **`frontend-build` Job**:
+     - Sets up Node.js 20 with npm dependency caching.
+     - Executes `npm ci` for deterministic package installations.
+     - Runs `npm test` (Vitest component testing).
+     - Runs `npm run build` (`tsc && vite build`) to enforce TypeScript compilation and production bundle validity.
+
+2. **`deploy.yml` (Production Deployment Validation)**:
+   - **Trigger**: Direct pushes or merges into `main`.
+   - Validates multi-container production build configurations (`docker compose config`).
+   - Syncs automatically with hosted deployment platforms (e.g. Vercel for frontend/serverless API).
+
+---
+
+## 9. Dataset & Mock Strategy Justification
+
+In accordance with hackathon guidelines, the platform incorporates a scientifically grounded geospatial dataset and time-series simulation engine:
+
+1. **Geographical Regions & Projects**:
+   - Focuses on prominent ecological conservation corridors:
+     - **Western Ghats Biodiversity Corridor**: High canopy density tropical evergreen biomes.
+     - **Sundarbans Mangrove Blue Carbon Reserve**: Coastal saline mangrove wetlands with unique blue carbon sequestration characteristics.
+     - **Araku Valley Agroforestry**: Shaded coffee agroforestry and community soil carbon enrichment.
+2. **Realistic Metric Ranges**:
+   - **Soil Organic Carbon (SOC)**: Calibrated between `40 - 160 t CO2e/ha`, matching IPCC tier-2 tropical forest estimates.
+   - **Canopy Closure**: Simulated between `65% - 95%` with seasonal monsoon fluctuations.
+   - **Normalized Difference Vegetation Index (NDVI)**: Modeled between `0.55 - 0.88` reflecting satellite multi-spectral Sentinel-2 bands.
+3. **Rationale for Simulation Engine**:
+   - Third-party satellite raster imagery APIs (Sentinel Hub, Planet Labs) require paid subscription tiers, rate limits, and slow asynchronous tile pipelines.
+   - Generating mathematically consistent time-series curves allows instant, zero-latency evaluation of dashboards, charts, and polygon analytics during review and grading while maintaining true-to-life ecological dynamics.
+
+---
+
+## 10. Data Provenance & Scientific Transparency
 
 > **Environmental Metrics Disclaimer**: All carbon density (`t CO2e/ha`), canopy closure (`%`), and NDVI metrics in this application are generated simulation models derived from regression algorithms. They are explicitly badged in the UI as **"Sample / Simulated Model Data"** to ensure complete scientific transparency.

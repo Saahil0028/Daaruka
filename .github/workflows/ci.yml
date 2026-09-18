@@ -53,6 +53,11 @@ jobs:
           cd frontend
           npm ci
 
+      - name: Run Vitest Suite
+        run: |
+          cd frontend
+          npm test
+
       - name: Type check & Vite Production Build
         run: |
           cd frontend

@@ -3,6 +3,6 @@
     "prettier --write"
   ],
   "backend/**/*.py": [
-    "ruff check --fix"
+    "node scripts/lint-python.js"
   ]
 }

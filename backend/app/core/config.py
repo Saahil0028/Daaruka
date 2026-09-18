@@ -2,10 +2,16 @@ import os
 from typing import List, Union
 
 from pydantic import field_validator
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        case_sensitive=True,
+        extra="ignore",
+    )
+
     PROJECT_NAME: str = "Darukaa.Earth Backend"
     API_V1_STR: str = "/api/v1"
     SECRET_KEY: str = "darukaa-earth-super-secret-jwt-key-2026-hackathon"
@@ -40,8 +46,5 @@ class Settings(BaseSettings):
             return v
         return ["http://localhost:5173"]
 
-    class Config:
-        env_file = ".env"
-        case_sensitive = True
 
 settings = Settings()
