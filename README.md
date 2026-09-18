@@ -292,10 +292,10 @@ Located under `.github/workflows/`:
      - Runs `npm test` (Vitest component testing).
      - Runs `npm run build` (`tsc && vite build`) to enforce TypeScript compilation and production bundle validity.
 
-2. **`deploy.yml` (Production Deployment Validation)**:
+2. **`deploy.yml` (Production Docker Configuration Validation)**:
    - **Trigger**: Direct pushes or merges into `main`.
-   - Validates multi-container production build configurations (`docker compose config`).
-   - Syncs automatically with hosted deployment platforms (e.g. Vercel for frontend/serverless API).
+   - **GitHub Action Scope**: Validates multi-container production build configurations (`docker compose config`) in CI to guarantee Docker orchestration files remain error-free.
+   - **Hosted Deployment**: The live production application is deployed automatically via **Vercel's native GitHub integration** on push to `main` (rather than being deployed through the GitHub Actions runner itself).
 
 ---
 
